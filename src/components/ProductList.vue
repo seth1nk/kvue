@@ -9,9 +9,6 @@
     />
     <div class="app-container">
       <h1 class="page-title">Список товаров</h1>
-      <div style="text-align: center; margin-bottom: 20px;">
-        <router-link to="/products/create" class="btn-primary">Добавить товар</router-link>
-      </div>
       <div class="table-container">
         <table class="styled-table products-table">
           <thead>
