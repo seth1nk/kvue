@@ -9,9 +9,6 @@
     />
     <div class="app-container">
       <h1 class="page-title">Список клиентов</h1>
-      <div style="text-align: center; margin-bottom: 20px;">
-        <router-link to="/clients/create" class="btn-primary">Добавить клиента</router-link>
-      </div>
       <div class="table-container">
         <table class="styled-table clients-table">
           <thead>
