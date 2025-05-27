@@ -51,7 +51,7 @@
               </td>
               <td>
                 <div class="action-buttons">
-                  <router-link :to="`/client/${item.id}`" class="action-btn view-icon">
+                  <router-link :to="`/view-clients/${item.id}`" class="action-btn view-icon">
                     <i class="fas fa-eye"></i>
                   </router-link>
                 </div>
