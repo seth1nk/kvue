@@ -34,7 +34,7 @@ export default {
       product: null,
       loading: true,
       errorMessage: null,
-      backendUrl: 'http://localhost:8000',
+      backendUrl: 'https://knode-nl4t.onrender.com',
     };
   },
   async created() {
