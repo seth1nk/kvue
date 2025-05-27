@@ -50,7 +50,7 @@
               </td>
               <td>
                 <div class="action-buttons">
-                  <router-link :to="`/product/${item.id}`" class="action-btn view-icon">
+                  <router-link :to="`/view-products/${item.id}`" class="action-btn view-icon">
                     <i class="fas fa-eye"></i>
                   </router-link>
                 </div>
