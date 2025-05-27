@@ -5,18 +5,23 @@
     <div v-else-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     <div v-else-if="product" class="product-details">
       <div class="product-image-container">
-        <img v-if="product.image" :src="`${backendUrl}${product.image.replace('/img/', '/images/')}`" alt="Product Image" class="product-image" />
+        <img
+          v-if="product.image"
+          :src="`${backendUrl}${product.image.replace('/img/', '/images/')}`"
+          alt="Product Image"
+          class="product-image"
+          @error="handleImageError"
+        />
         <span v-else>Нет изображения</span>
       </div>
       <div class="product-info">
         <p><strong>Название:</strong> {{ product.name || '-' }}</p>
         <p><strong>Производитель:</strong> {{ product.manufacturer || '-' }}</p>
         <p><strong>Категория:</strong> {{ product.category || '-' }}</p>
-        <p><strong>Цена:</strong> {{ product.price ? `${product.price.toFixed(2)} ₽` : '-' }}</p>
+        <p><strong>Цена:</strong> {{ formatPrice(product.price) }}</p>
         <p><strong>Количество на складе:</strong> {{ product.stock_quantity || '-' }}</p>
         <p><strong>Срок годности:</strong> {{ formatDate(product.expiration_date) || '-' }}</p>
         <p><strong>Требуется рецепт:</strong> {{ product.prescription_required ? 'Да' : 'Нет' }}</p>
-        <p><strong>Дата создания:</strong> {{ formatDate(product.created_at) || '-' }}</p>
       </div>
       <div class="action-buttons">
         <button class="btn-secondary" @click="$router.push('/products')">Вернуться к списку</button>
@@ -64,6 +69,7 @@ export default {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
+        console.log('API Response:', data); // Отладка
         this.product = data;
       } catch (err) {
         console.error('Ошибка при получении данных товара:', err);
@@ -77,11 +83,44 @@ export default {
       const d = new Date(date);
       return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
     },
+    formatPrice(price) {
+      if (price == null) return '-';
+      const numericPrice = parseFloat(price);
+      return !isNaN(numericPrice) ? `${numericPrice.toFixed(2)} ₽` : '-';
+    },
+    handleImageError() {
+      console.error('Ошибка загрузки изображения товара');
+    },
   },
 };
 </script>
 
 <style scoped>
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #ffffff, #ffe6e6);
+  color: #3d0000;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #ffffff;
+  background: linear-gradient(90deg, #d32f2f, #b71c1c);
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .product-details {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
@@ -109,6 +148,11 @@ export default {
   object-fit: cover;
   border: 2px solid #ffffff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.product-image-container .product-image:hover {
+  transform: scale(1.05);
 }
 
 .product-info {
@@ -139,14 +183,14 @@ export default {
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
-  color: #3d0000;
-  background: rgba(255, 235, 238, 0.3);
-  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  color: #ffffff;
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 235, 238, 0.5);
   transform: scale(1.05);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
@@ -156,9 +200,18 @@ export default {
   text-align: center;
   font-size: 1.2rem;
   color: #3d0000;
+  margin-top: 20px;
 }
 
 @media (max-width: 768px) {
+  .app-container {
+    padding: 15px;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
   .product-details {
     padding: 15px;
   }
@@ -170,6 +223,11 @@ export default {
 
   .product-info p {
     font-size: 1rem;
+  }
+
+  .btn-secondary {
+    padding: 8px 15px;
+    font-size: 0.9rem;
   }
 }
 </style>
