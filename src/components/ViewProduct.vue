@@ -49,7 +49,7 @@ export default {
   methods: {
     async fetchProduct(productId) {
       try {
-        const response = await fetch(`${this.backendUrl}/api/view-products/${productId}`, {
+        const response = await fetch(`${this.backendUrl}/api/view-product/${productId}`, {
           method: 'GET',
           credentials: 'include',
         });
