@@ -50,7 +50,7 @@ export default {
   methods: {
     async fetchClient(clientId) {
       try {
-        const response = await fetch(`${this.backendUrl}/api/view-client/${clientId}`, {
+        const response = await fetch(`${this.backendUrl}/api/view-clients/${clientId}`, {
           method: 'GET',
           credentials: 'include',
         });
