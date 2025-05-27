@@ -3,7 +3,7 @@
     <div class="wrapper">
       <router-view></router-view>
     </div>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   </header>
   <main>
     <TheWelcome />
@@ -19,7 +19,7 @@
         <li><router-link to="/" class="button">Главная</router-link></li>
         <li><router-link to="/about" class="button">О нас</router-link></li>
         <li><router-link to="/contact" class="button">Контакты</router-link></li>
-        <li v-if="isAuthenticated"><router-link to="/repairs" class="button">Ремонты</router-link></li>
+        <li v-if="isAuthenticated"><router-link to="/products" class="button">Товары</router-link></li>
         <li v-if="isAuthenticated"><router-link to="/clients" class="button">Клиенты</router-link></li>
         <li v-if="!isAuthenticated"><router-link to="/login" class="button">Войти</router-link></li>
         <li v-if="!isAuthenticated"><router-link to="/register" class="button">Зарегистрироваться</router-link></li>
@@ -103,9 +103,9 @@ export default {
   top: 50%;
   right: 0;
   transform: translateY(-50%);
-  background: rgba(26, 32, 44, 0.95); /* Тёмный прозрачный фон */
+  background: rgba(255, 235, 238, 0.9); /* Полупрозрачный белый с красноватым оттенком */
   backdrop-filter: blur(10px);
-  border-left: 1px solid rgba(255, 255, 255, 0.3); /* Белая граница */
+  border-left: 1px solid rgba(183, 28, 28, 0.3); /* Красная граница */
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -125,11 +125,14 @@ export default {
   max-width: 100px;
   height: auto;
   border-radius: 5px;
-  transition: transform 0.3s ease;
+  border: 2px solid #ffffff; /* Белый бордер */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .logo:hover {
   transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(183, 28, 28, 0.5); /* Красная тень */
 }
 
 /* Список кнопок */
@@ -148,18 +151,18 @@ export default {
   display: block;
   width: 180px;
   padding: 10px 15px;
-  background: #ff6b6b; /* Яркий розовый фон */
+  background: linear-gradient(135deg, #d32f2f, #b71c1c); /* Красный градиент */
   color: #ffffff; /* Белый текст */
   text-decoration: none;
   border-radius: 8px;
-  font-weight: bold;
+  font-weight: 600;
   text-align: center;
   transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .button:hover {
-  background: #4b0082; /* Тёмный фиолетовый при ховере */
+  background: linear-gradient(135deg, #b71c1c, #d32f2f); /* Обратный градиент */
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
@@ -167,35 +170,53 @@ export default {
 /* Кнопка админ-панели */
 .admin-button {
   display: block;
-  width: auto;
+  width: 180px;
   padding: 10px 15px;
-  background: linear-gradient(135deg, #ff6b6b, #4b0082); /* Градиент розовый-фиолетовый */
+  background: linear-gradient(135deg, #b71c1c, #7f0000); /* Тёмно-красный градиент */
   color: #ffffff;
   text-decoration: none;
   border-radius: 8px;
-  font-weight: bold;
+  font-weight: 600;
   text-transform: uppercase;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  animation: pulse 2s infinite; /* Пульсация */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .admin-button:hover {
-  background: linear-gradient(135deg, #4b0082, #ff6b6b);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  animation: none; /* Отключение пульсации при hover */
+}
+
+/* Пульсирующая анимация */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  }
 }
 
 /* Приветственное сообщение */
 .welcome-message span {
   display: block;
-  width: auto;
+  width: 180px;
   padding: 10px 15px;
   font-size: 16px;
-  color: #ffffff; /* Белый текст */
-  font-weight: bold;
+  color: #3d0000; /* Тёмно-красный текст */
+  font-weight: 600;
   text-align: center;
-  background: rgba(255, 255, 255, 0.2); /* Полупрозрачный белый фон */
+  background: rgba(255, 255, 255, 0.7); /* Полупрозрачный белый */
+  border: 1px solid #d32f2f; /* Красная рамка */
   border-radius: 8px;
 }
 
@@ -210,14 +231,10 @@ export default {
     max-width: 80px;
   }
 
-  .button {
-    width: 140px;
-    padding: 8px 10px;
-    font-size: 0.9rem;
-  }
-
+  .button,
   .admin-button,
   .welcome-message span {
+    width: 140px;
     padding: 8px 10px;
     font-size: 0.9rem;
   }

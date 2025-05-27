@@ -1,6 +1,12 @@
 <template>
   <div>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <div class="app-container">
       <h1 class="page-title">Список клиентов</h1>
       <div style="text-align: center; margin-bottom: 20px;">
@@ -13,11 +19,12 @@
               <th>ID</th>
               <th>Имя</th>
               <th>Фамилия</th>
-              <th>Телефон</th>
+              <th>Отчество</th>
               <th>Email</th>
+              <th>Телефон</th>
               <th>Адрес</th>
-              <th>Дата<br>рождения</th>
-              <th>Заметки</th>
+              <th>Дата рождения</th>
+              <th>Подписан</th>
               <th>Фото</th>
               <th>Действия</th>
             </tr>
@@ -27,18 +34,26 @@
               <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
               <td>{{ item.first_name || 'N/A' }}</td>
               <td>{{ item.last_name || 'N/A' }}</td>
-              <td>{{ item.phone || 'N/A' }}</td>
+              <td>{{ item.middle_name || 'N/A' }}</td>
               <td>{{ item.email || 'N/A' }}</td>
+              <td>{{ item.phone || 'N/A' }}</td>
               <td>{{ item.address || 'N/A' }}</td>
-              <td>{{ item.birth_date || 'N/A' }}</td>
-              <td>{{ item.notes || 'N/A' }}</td>
+              <td>{{ formatDate(item.birth_date) || 'N/A' }}</td>
+              <td>{{ item.subscribed ? 'Да' : 'Нет' }}</td>
               <td>
-                <img v-if="item.photo" :src="`${backendUrl}${item.photo.replace('/img/', '/images/')}`" alt="Client Photo" class="product-image" />
+                <img
+                  v-if="item.photo"
+                  :src="`${backendUrl}${item.photo.replace('/images/', '/images/')}`"
+                  alt="Client Photo"
+                  class="product-image"
+                />
                 <span v-else>N/A</span>
               </td>
               <td>
                 <div class="action-buttons">
-                  <router-link :to="`/clients/view/${item.id}`" class="action-btn view-icon"><i class="fas fa-eye"></i></router-link>
+                  <router-link :to="`/client/${item.id}`" class="action-btn view-icon">
+                    <i class="fas fa-eye"></i>
+                  </router-link>
                 </div>
               </td>
             </tr>
@@ -57,6 +72,7 @@
 
 <script>
 export default {
+  name: 'ClientList',
   data() {
     return {
       clients: [],
@@ -87,8 +103,8 @@ export default {
         this.clients = data.clients || [];
         this.totalPages = data.totalPages || 0;
         this.currentPage = data.currentPage || 1;
-      } catch (err) {
-        console.error('Error fetching clients:', err);
+      } catch (error) {
+        console.error('Ошибка при загрузке клиентов:', error);
         this.clients = [];
         this.totalPages = 0;
       }
@@ -105,40 +121,24 @@ export default {
         await this.fetchClients();
       }
     },
-    async deleteClient(id) {
-      if (!confirm('Вы уверены, что хотите удалить этого клиента?')) {
-        return;
-      }
-      try {
-        const response = await fetch(`${this.backendUrl}/delete-client/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        await this.fetchClients();
-      } catch (err) {
-        console.error('Error deleting client:', err);
-        alert(`Ошибка: ${err.message}`);
-      }
+    formatDate(date) {
+      if (!date) return 'N/A';
+      const d = new Date(date);
+      return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
     },
   },
 };
 </script>
 
 <style scoped>
-/* Основной контейнер */
+/* Стили из style.css, адаптированные под красно-белую гамму */
 .app-container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  font-family: 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #e0e0e0, #f5f7fa); /* Светлый градиент */
-  color: #333; /* Темный текст */
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #ffffff, #ffe6e6);
+  color: #3d0000;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -151,10 +151,12 @@ export default {
   font-size: 2rem;
   font-weight: 600;
   margin-bottom: 20px;
-  color: #2c3e50; /* Темно-синий заголовок */
+  color: #ffffff;
+  background: linear-gradient(90deg, #d32f2f, #b71c1c);
+  padding: 12px;
+  border-radius: 12px;
 }
 
-/* Кнопка "Добавить клиента" */
 .btn-primary {
   display: inline-block;
   padding: 10px 20px;
@@ -162,24 +164,24 @@ export default {
   font-size: 1rem;
   font-weight: 600;
   color: #ffffff;
-  background: #3498db; /* Синий фон */
+  background: #d32f2f;
   transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
 }
 
 .btn-primary:hover {
-  background: #e67e22; /* Оранжевый при наведении */
+  background: #b71c1c;
   transform: scale(1.05);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* Настройка таблицы */
 .table-container {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   overflow-x: auto;
-  background: #ffffff; /* Белый фон */
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 15px;
@@ -187,7 +189,7 @@ export default {
 
 .styled-table.clients-table {
   width: 100%;
-  min-width: 900px; /* Уменьшено для компактности */
+  min-width: 600px;
   border-collapse: separate;
   border-spacing: 0;
   border-radius: 8px;
@@ -196,20 +198,20 @@ export default {
 
 .styled-table.clients-table th,
 .styled-table.clients-table td {
-  padding: 14px 10px;
+  padding: 10px 8px;
   text-align: center;
   vertical-align: middle;
-  border-bottom: 1px solid #e0e0e0; /* Светлая граница */
-  border-right: 1px solid #e0e0e0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #333; /* Темный текст */
+  border-bottom: 1px solid rgba(183, 28, 28, 0.3);
+  border-right: 1px solid rgba(183, 28, 28, 0.3);
+  white-space: normal;
+  word-break: break-word;
+  color: #3d0000;
+  font-size: 0.85rem;
 }
 
 .styled-table.clients-table th {
-  background: linear-gradient(135deg, #3498db, #2980b9); /* Градиент для заголовков */
-  color: #ffffff;
+  background: rgba(255, 235, 238, 0.5);
+  color: #3d0000;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -225,87 +227,111 @@ export default {
   border-bottom: none;
 }
 
-/* Корректировка для заголовка "Дата рождения" */
-.clients-table th:nth-child(7) {
-  line-height: 1.2; /* Уменьшенный межстрочный интервал */
-  padding: 10px 5px; /* Уменьшенный отступ */
-}
-
-/* Эффект полос для строк */
 .styled-table.clients-table tbody tr:nth-child(even) {
-  background: #f9fafb; /* Очень светлый серый */
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .styled-table.clients-table tbody tr:hover {
-  background: #e6f0fa; /* Светло-голубой при наведении */
+  background: rgba(211, 47, 47, 0.1);
   transition: background 0.3s ease;
 }
 
-/* Настройка ширины столбцов */
-.clients-table th:nth-child(1),
-.clients-table td:nth-child(1) { /* ID */
+/* Ширины столбцов */
+.styled-table.clients-table th:nth-child(1),
+.styled-table.clients-table td:nth-child(1) {
+  /* ID */
   width: 5%;
   min-width: 40px;
+  max-width: 60px;
 }
-.clients-table th:nth-child(2),
-.clients-table td:nth-child(2) { /* Имя */
+
+.styled-table.clients-table th:nth-child(2),
+.styled-table.clients-table td:nth-child(2) {
+  /* Имя */
   width: 10%;
-  min-width: 100px;
+  min-width: 80px;
+  max-width: 120px;
 }
-.clients-table th:nth-child(3),
-.clients-table td:nth-child(3) { /* Фамилия */
+
+.styled-table.clients-table th:nth-child(3),
+.styled-table.clients-table td:nth-child(3) {
+  /* Фамилия */
   width: 10%;
-  min-width: 100px;
+  min-width: 80px;
+  max-width: 120px;
 }
-.clients-table th:nth-child(4),
-.clients-table td:nth-child(4) { /* Телефон */
+
+.styled-table.clients-table th:nth-child(4),
+.styled-table.clients-table td:nth-child(4) {
+  /* Отчество */
   width: 10%;
-  min-width: 100px;
+  min-width: 80px;
+  max-width: 120px;
 }
-.clients-table th:nth-child(5),
-.clients-table td:nth-child(5) { /* Email */
-  width: 12%;
-  min-width: 120px;
-  white-space: normal;
-  word-break: break-word;
-}
-.clients-table th:nth-child(6),
-.clients-table td:nth-child(6) { /* Адрес */
+
+.styled-table.clients-table th:nth-child(5),
+.styled-table.clients-table td:nth-child(5) {
+  /* Email */
   width: 15%;
-  min-width: 120px;
-  white-space: normal;
-  word-break: break-word;
+  min-width: 80px;
+  max-width: 120px;
 }
-.clients-table th:nth-child(7),
-.clients-table td:nth-child(7) { /* Дата рождения */
+
+.styled-table.clients-table th:nth-child(6),
+.styled-table.clients-table td:nth-child(6) {
+  /* Телефон */
   width: 10%;
+  min-width: 80px;
+  max-width: 120px;
+}
+
+.styled-table.clients-table th:nth-child(7),
+.styled-table.clients-table td:nth-child(7) {
+  /* Адрес */
+  width: 15%;
   min-width: 100px;
+  max-width: 150px;
 }
-.clients-table th:nth-child(8),
-.clients-table td:nth-child(8) { /* Заметки */
-  width: 13%;
-  min-width: 120px;
-  white-space: normal;
-  word-break: break-word;
+
+.styled-table.clients-table th:nth-child(8),
+.styled-table.clients-table td:nth-child(8) {
+  /* Дата рождения */
+  width: 10%;
+  min-width: 80px;
+  max-width: 120px;
 }
-.clients-table th:nth-child(9),
-.clients-table td:nth-child(9) { /* Фото */
-  width: 5%;
-  min-width: 60px;
-}
-.clients-table th:nth-child(10),
-.clients-table td:nth-child(10) { /* Действия */
+
+.styled-table.clients-table th:nth-child(9),
+.styled-table.clients-table td:nth-child(9) {
+  /* Подписан */
   width: 8%;
   min-width: 60px;
+  max-width: 80px;
+}
+
+.styled-table.clients-table th:nth-child(10),
+.styled-table.clients-table td:nth-child(10) {
+  /* Фото */
+  width: 8%;
+  min-width: 60px;
+  max-width: 80px;
+}
+
+.styled-table.clients-table th:nth-child(11),
+.styled-table.clients-table td:nth-child(11) {
+  /* Действия */
+  width: 10%;
+  min-width: 60px;
+  max-width: 80px;
 }
 
 .product-image {
-  max-width: 60px;
-  max-height: 60px;
+  max-width: 50px;
+  max-height: 50px;
   border-radius: 8px;
   object-fit: cover;
   vertical-align: middle;
-  border: 2px solid #3498db;
+  border: 2px solid #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -313,10 +339,9 @@ export default {
   text-align: center;
   font-size: 1.2rem;
   padding: 20px;
-  color: #666;
+  color: #3d0000;
 }
 
-/* Пагинация */
 .pagination {
   display: flex;
   justify-content: center;
@@ -332,29 +357,28 @@ export default {
   font-size: 1rem;
   font-weight: 600;
   color: #ffffff;
-  background: #3498db;
+  background: #d32f2f;
   transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .pagination button:disabled {
-  background: #bdc3c7;
+  background: #b0bec5;
   cursor: not-allowed;
   box-shadow: none;
 }
 
 .pagination button:hover:not(:disabled) {
-  background: #e67e22;
+  background: #b71c1c;
   transform: scale(1.05);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 .pagination span {
-  color: #2c3e50;
+  color: #3d0000;
   font-weight: 600;
 }
 
-/* Действия */
 .action-buttons {
   display: flex;
   gap: 8px;
@@ -368,24 +392,24 @@ export default {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #3498db;
+  background: #d32f2f;
   color: #ffffff;
   font-size: 1rem;
   transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
 }
 
 .action-btn:hover {
-  background: #e67e22;
+  background: #b71c1c;
   transform: scale(1.1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .view-icon:hover {
-  background: #2ecc71; /* Зеленый для просмотра */
+  background: #2e7d32;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
   .app-container {
     padding: 15px;
@@ -401,13 +425,13 @@ export default {
 
   .styled-table.clients-table th,
   .styled-table.clients-table td {
-    padding: 8px;
-    font-size: 0.9rem;
+    padding: 6px;
+    font-size: 0.8rem;
   }
 
   .clients-table th,
   .clients-table td {
-    min-width: 40px;
+    min-width: 30px;
   }
 
   .product-image {

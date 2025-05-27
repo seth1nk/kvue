@@ -9,13 +9,15 @@
         <span v-else>Нет изображения</span>
       </div>
       <div class="client-info">
-        <p><strong>Имя:</strong> {{ client.first_name || 'N/A' }}</p>
-        <p><strong>Фамилия:</strong> {{ client.last_name || 'N/A' }}</p>
-        <p><strong>Телефон:</strong> {{ client.phone || 'N/A' }}</p>
-        <p><strong>Email:</strong> {{ client.email || 'N/A' }}</p>
-        <p><strong>Адрес:</strong> {{ client.address || 'N/A' }}</p>
-        <p><strong>Дата рождения:</strong> {{ client.birth_date || 'N/A' }}</p>
-        <p><strong>Заметки:</strong> {{ client.notes || 'N/A' }}</p>
+        <p><strong>Имя:</strong> {{ client.first_name || '-' }}</p>
+        <p><strong>Фамилия:</strong> {{ client.last_name || '-' }}</p>
+        <p><strong>Отчество:</strong> {{ client.middle_name || '-' }}</p>
+        <p><strong>Email:</strong> {{ client.email_address || '-' }}</p>
+        <p><strong>Телефон:</strong> {{ client.phone_number || '-' }}</p>
+        <p><strong>Адрес:</strong> {{ client.address || '-' }}</p>
+        <p><strong>Дата рождения:</strong> {{ formatDate(client.birth_date) || '-' }}</p>
+        <p><strong>Подписан:</strong> {{ client.subscribed ? 'Да' : 'Нет' }}</p>
+        <p><strong>Дата создания:</strong> {{ formatDate(client.created_at) || '-' }}</p>
       </div>
       <div class="action-buttons">
         <button class="btn-secondary" @click="$router.push('/clients')">Вернуться к списку</button>
@@ -27,12 +29,13 @@
 
 <script>
 export default {
+  name: 'ViewClient',
   data() {
     return {
       client: null,
       loading: true,
       errorMessage: null,
-      backendUrl: 'http://localhost:3000',
+      backendUrl: 'http://localhost:8000',
     };
   },
   async created() {
@@ -70,13 +73,18 @@ export default {
         this.loading = false;
       }
     },
+    formatDate(date) {
+      if (!date) return 'N/A';
+      const d = new Date(date);
+      return d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    },
   },
 };
 </script>
 
 <style scoped>
 .client-details {
-  background: rgba(44, 62, 80, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   padding: 20px;
@@ -100,7 +108,7 @@ export default {
   max-height: 150px;
   border-radius: 8px;
   object-fit: cover;
-  border: 2px solid #3498db;
+  border: 2px solid #ffffff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
@@ -112,12 +120,12 @@ export default {
 
 .client-info p {
   margin: 10px 0;
-  color: #e0e0e0;
+  color: #3d0000;
   font-size: 1.25rem;
 }
 
 .client-info strong {
-  color: #ffffff;
+  color: #3d0000;
   font-weight: 600;
 }
 
@@ -127,11 +135,28 @@ export default {
   margin-top: 20px;
 }
 
+.btn-secondary {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #3d0000;
+  background: rgba(255, 235, 238, 0.3);
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 235, 238, 0.5);
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
 .loading-message,
 .error-message {
   text-align: center;
   font-size: 1.2rem;
-  color: #e0e0e0;
+  color: #3d0000;
 }
 
 @media (max-width: 768px) {
